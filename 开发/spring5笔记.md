@@ -38,12 +38,6 @@
 
 ### 1.3 组成
 
-[外链图片转存失败,源站可能有防盗链机制,建议将图片保存下来直接上传(img-QlqTZFHR-1606752524333)(C:\Users\老司机赖康\AppData\Roaming\Typora\typora-user-images\image-20201124101213015.png)]
-
-Spring 框架是一个分层架构，由 7 个定义良好的模块组成。Spring 模块构建在核心容器之上，核心容器定义了创建、配置和管理 bean 的方式 .
-
-[外链图片转存失败,源站可能有防盗链机制,建议将图片保存下来直接上传(img-3nBAGTgi-1606752524334)(C:\Users\老司机赖康\AppData\Roaming\Typora\typora-user-images\image-20201124101224637.png)]
-
 组成 Spring 框架的每个模块（或组件）都可以单独存在，或者与其他一个或多个模块联合实现。每个模块的功能如下：
 
 - **核心容器**：核心容器提供 Spring 框架的基本功能。核心容器的主要组件是 BeanFactory，它是工厂模式的实现。BeanFactory 使用*控制反转*（IOC） 模式将应用程序的配置和依赖性规范与实际的应用程序代码分开。
@@ -733,8 +727,6 @@ xmlns:p="http://www.springframework.org/schema/p"
 xmlns:c="http://www.springframework.org/schema/c"
 12
 ```
-
-[外链图片转存失败,源站可能有防盗链机制,建议将图片保存下来直接上传(img-5VauQfbO-1606752524339)(C:\Users\老司机赖康\AppData\Roaming\Typora\typora-user-images\image-20201124220211338.png)]
 
 User :
 
