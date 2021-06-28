@@ -1,20 +1,20 @@
 ## 1.Batch Normalization原理
 
 我们在图像预处理过程中通常会对图像进行标准化处理，这样能够加速网络的收敛，如下图所示，对于Conv1来说输入的就是满足某一分布的特征矩阵，但对于Conv2而言输入的feature map就不一定满足某一分布规律了（注意这里所说满足某一分布规律并不是指某一个feature map的数据要满足分布规律，理论上是指整个训练样本集所对应feature map的数据要满足分布规律）。而<font color=red>**我们Batch Normalization的目的就是使我们的feature map满足均值为0，方差为1的分布规律。**</font>
-<img src="C:\Users\ysx\AppData\Roaming\Typora\typora-user-images\image-20210628115112142.png" alt="image-20210628115112142" style="zoom:50%;" />
+<img src="https://raw.githubusercontent.com/33499/note/main/深度学习/imgs/image-20210628115112142.png" alt="image-20210628115112142.png (1300×631) (raw.githubusercontent.com)" style="zoom:50%;" />
 
 　BN其具体操作流程，如论文中描述的一样：
 
-<img src="C:\Users\ysx\AppData\Roaming\Typora\typora-user-images\image-20210628142757979.png" alt="image-20210628142757979" style="zoom:50%;" />
+<img src="https://raw.githubusercontent.com/33499/note/main/深度学习/imgs/image-20210628142731758.png" alt="image-20210628142731758.png (1059×707) (raw.githubusercontent.com)" style="zoom:50%;" />
 
 我们刚刚有说让feature map满足某一分布规律，理论上是指整个训练样本集所对应feature map的数据要满足分布规律，也就是说要计算出整个训练集的feature map然后在进行标准化处理，对于一个大型的数据集明显是不可能的，所以论文中说的是Batch Normalization，也就是我们计算一个Batch数据的feature map然后在进行标准化（batch越大越接近整个数据集的分布，效果越好）。我们根据上图的公式可以知道代表着**我们计算的feature map每个维度（channel）的均值，注意是一个向量不是一个值，向量的每一个元素代表着一个维度（channel）的均值。代表着我们计算的feature map每个维度（channel）的方差，注意是一个向量不是一个值，向量的每一个元素代表着一个维度（channel）的方差**，然后根据和计算标准化处理后得到的值。下图给出了一个计算均值和方差的示例：
-![image-20210628143128346](C:\Users\ysx\AppData\Roaming\Typora\typora-user-images\image-20210628143128346.png)
+![image-20210628143128346.png (2141×1149) (raw.githubusercontent.com)](https://raw.githubusercontent.com/33499/note/main/深度学习/imgs/image-20210628143128346.png)
 
 经过这个<font color=red>**变换后某个神经元的激活x形成了均值为0，方差为1的正态分布，目的是把值往后续要进行的非线性变换的线性区拉动，增大导数值，增强反向传播信息流动性，加快训练收敛速度。**</font><font color=green>**但是这样会导致网络表达能力下降，为了防止这一点，每个神经元增加两个调节参数（scale和shift），这两个参数是通过训练来学习到的，用来对变换后的激活反变换，使得网络表达能力增强，即对变换后的激活进行如下的scale和shift操作，这其实是变换的反操作：**</font>
 
-<img src="C:\Users\ysx\AppData\Roaming\Typora\typora-user-images\image-20210628143454617.png" alt="image-20210628143454617" style="zoom:33%;" />
+<img src="https://raw.githubusercontent.com/33499/note/main/深度学习/imgs/image-20210628143454617.png" alt="image-20210628143454617.png (539×126) (raw.githubusercontent.com)" style="zoom:33%;" />
 
-## 2.pytorch实现、
+## 2.pytorch实现
 
 ### 参数解释
 
@@ -51,15 +51,15 @@ for data , label in self.dataloader:
 
 刚刚说了在我们**训练过程中**，均值![\mu _{\ss }](https://private.codecogs.com/gif.latex?%5Cmu%20_%7B%5Css%20%7D)和方差![\sigma_{\ss }^{2}](https://private.codecogs.com/gif.latex?%5Csigma_%7B%5Css%20%7D%5E%7B2%7D)是通过计算当前批次数据得到的记为为![\mu _{now}](https://private.codecogs.com/gif.latex?%5Cmu%20_%7Bnow%7D)和![\sigma _{now}^{2}](https://private.codecogs.com/gif.latex?%5Csigma%20_%7Bnow%7D%5E%7B2%7D)，而我们的**验证以及预测过程中**所使用的均值方差是**一个统计量记为![\mu _{statistic}](https://private.codecogs.com/gif.latex?%5Cmu%20_%7Bstatistic%7D)和![\sigma _{statistic}^{2}](https://private.codecogs.com/gif.latex?%5Csigma%20_%7Bstatistic%7D%5E%7B2%7D)。![\mu _{statistic}](https://private.codecogs.com/gif.latex?%5Cmu%20_%7Bstatistic%7D)和![\sigma _{statistic}^{2}](https://private.codecogs.com/gif.latex?%5Csigma%20_%7Bstatistic%7D%5E%7B2%7D)的具体更新策略如下，其中momentum默认取0.1：**
 
-<img src="C:\Users\ysx\AppData\Roaming\Typora\typora-user-images\image-20210628144200377.png" alt="image-20210628144200377" style="zoom:33%;" />
+<img src="https://raw.githubusercontent.com/33499/note/main/深度学习/imgs/image-20210628144200377.png" alt="image-20210628144200377.png (1283×176) (raw.githubusercontent.com)" style="zoom:33%;" />
 
 这里要注意一下，<font color=red>**在pytorch中对当前批次feature进行bn处理时所使用的是总体标准差**</font>，计算公式如下：
 
-<img src="C:\Users\ysx\AppData\Roaming\Typora\typora-user-images\image-20210628144229097.png" alt="image-20210628144229097" style="zoom:33%;" />
+<img src="https://raw.githubusercontent.com/33499/note/main/深度学习/imgs/image-20210628144229097.png" alt="image-20210628144229097.png (555×168) (raw.githubusercontent.com)" style="zoom:33%;" />
 
 <font color=red>**在更新统计量时采用的是样本标准差**</font>，计算公式如下：
 
-<img src="C:\Users\ysx\AppData\Roaming\Typora\typora-user-images\image-20210628144239656.png" alt="image-20210628144239656" style="zoom:33%;" />
+<img src="https://raw.githubusercontent.com/33499/note/main/深度学习/imgs/image-20210628144239656.png" alt="image-20210628144239656.png (660×197) (raw.githubusercontent.com)" style="zoom:33%;" />
 
 下面是使用pytorch做的测试，代码如下：
 
@@ -113,5 +113,5 @@ print(output)
 
 ## 3.BatchNorm的好处
 
-　　①**不仅仅极大提升了训练速度，收敛过程大大加快；②还能增加分类效果，一种解释是这是类似于Dropout的一种防止过拟合的正则化表达方式，所以不用Dropout也能达到相当的效果；③另外调参过程也简单多了，对于初始化要求没那么高，而且可以使用大的学习率等。**总而言之，经过这么简单的变换，带来的好处多得很，这也是为何现在BN这么快流行起来的原因。
+　　**①不仅仅极大提升了训练速度，收敛过程大大加快；②还能增加分类效果，一种解释是这是类似于Dropout的一种防止过拟合的正则化表达方式，所以不用Dropout也能达到相当的效果；③另外调参过程也简单多了，对于初始化要求没那么高，而且可以使用大的学习率等。**总而言之，经过这么简单的变换，带来的好处多得很，这也是为何现在BN这么快流行起来的原因。
 
